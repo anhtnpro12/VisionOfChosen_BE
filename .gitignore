@@ -1,0 +1,85 @@
+﻿## === ASP.NET Core & .NET ===
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## === Configuration ===
+*.dbmdl
+*.bak
+*.backup
+*.log
+*.vscode/
+*.vs/
+.vs/
+
+## === ASP.NET secrets ===
+secrets.json
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+
+## === Entity Framework ===
+Migrations/
+
+## === Rider ===
+.idea/
+*.sln.iml
+
+## === VS Code ===
+.vscode/
+.history/
+
+## === NuGet ===
+*.nupkg
+*.snupkg
+*.nuspec
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## === Logs ===
+*.log
+logs/
+*.log.*
+
+## === SQLite (nếu dùng) ===
+*.db
+*.sqlite
+*.sqlite3
+
+## === Test results ===
+TestResults/
+*.coverage
+*.coveragexml
+*.testlog
+
+## === Build output ===
+out/
+dist/
+publish/
+*.dll
+*.exe
+*.pdb
+
+## === Others ===
+*.tmp
+*.cache
+*.swp
+*.DS_Store
+Thumbs.db
+
+## === JetBrains Rider Cache ===
+.idea/
+*.sln.iml
+
+## === npm & Node (nếu có front-end) ===
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+.env
+.env.*
