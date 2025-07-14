@@ -1,0 +1,26 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using VisionOfChosen_BE.DTOs.AIChat;
+using VisionOfChosen_BE.Services;
+
+namespace VisionOfChosen_BE.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AIChatController : ControllerBase
+    {
+        private readonly IAIChatService _service;
+
+        public AIChatController(IAIChatService service)
+        {
+            _service = service;
+        }
+
+        [HttpPost("ask")]
+        public async Task<IActionResult> Ask([FromBody] AIChatRequestDto request)
+        {
+            var result = await _service.ProcessPromptAsync(request);
+            return Ok(result);
+        }
+    }
+
+}
