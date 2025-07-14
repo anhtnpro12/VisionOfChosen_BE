@@ -1,7 +1,7 @@
 ﻿using VisionOfChosen_BE.Services;
 using VisionOfChosen_BE.Utils;
 
-namespace TaxNet_Repository
+namespace VisionOfChosen_BE
 {
     public static class ServiceInjection
     {
