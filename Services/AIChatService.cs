@@ -40,26 +40,19 @@ namespace VisionOfChosen_BE.Services
             var payload = new
             {
                 message = request.Message,
-                user_id = request.UserId,
                 session_id = request.SessionId
             };
 
             var aiResponse = await _httpHelper.PostJsonAsync<object, AIResponseDto>(
-                AiApiRoutes.Chat.Ask, payload);
-
-            // 3. Parse nội dung chuỗi JSON trong "reply"
-            var fixedReply = aiResponse.Reply.Replace("'", "\"");
-            var replyParsed = JsonSerializer.Deserialize<AIReplyParsed>(fixedReply);
-
-            var text = replyParsed?.Content?.FirstOrDefault()?.Text ?? "[Không có phản hồi]";
+                AiApiRoutes.Chat.ChatAI, payload);
 
             // 4. Lưu phản hồi của AI
             var aiMsg = new AiChatHistoryCreateDto
             {
                 SessionId = request.SessionId,
                 UserId = request.UserId,
-                Role = replyParsed?.Role ?? "assistant",
-                Message = text,
+                Role = "assistant",
+                Message = aiResponse.Response ?? "Không có phản hồi",
                 Timestamp = DateTime.UtcNow
             };
             await _historyService.CreateAsync(aiMsg, "ai");
@@ -67,8 +60,8 @@ namespace VisionOfChosen_BE.Services
             // 5. Trả kết quả
             return new AIChatResponseDto
             {
-                Role = replyParsed?.Role ?? "assistant",
-                Message = text
+                Role = "assistant",
+                Message = aiResponse.Response ?? "Không có phản hồi"
             };
         }
     }

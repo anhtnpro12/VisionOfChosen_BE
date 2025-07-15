@@ -2,11 +2,11 @@
 {
     public static class AiApiRoutes
     {
-        public const string BaseUrl = "http://3.27.61.209:8000/";
+        public const string BaseUrl = "http://3.27.141.39:8000";
 
         public static class Chat
         {
-            public const string Ask = $"{BaseUrl}/api/ask";
+            public const string ChatAI = $"{BaseUrl}/chat";
         }
     }
 
