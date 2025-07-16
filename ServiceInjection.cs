@@ -12,6 +12,7 @@ namespace VisionOfChosen_BE
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<IScanService, ScanService>();
             services.AddScoped<IAIChatService, AIChatService>();
+            services.AddScoped<IScanDetailService, ScanDetailService>();
             services.AddHttpClient<IHttpHelper, HttpHelper>();
         }
     }

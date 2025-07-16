@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VisionOfChosen_BE.Infra.Context;
 
@@ -10,9 +11,11 @@ using VisionOfChosen_BE.Infra.Context;
 namespace VisionOfChosen_BE.Migrations
 {
     [DbContext(typeof(VisionOfChosen_Context))]
-    partial class VisionOfChosen_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250716213227_update-scan-detail-table-v2")]
+    partial class updatescandetailtablev2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.7");

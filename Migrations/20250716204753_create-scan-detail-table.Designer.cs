@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VisionOfChosen_BE.Infra.Context;
 
@@ -10,9 +11,11 @@ using VisionOfChosen_BE.Infra.Context;
 namespace VisionOfChosen_BE.Migrations
 {
     [DbContext(typeof(VisionOfChosen_Context))]
-    partial class VisionOfChosen_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250716204753_create-scan-detail-table")]
+    partial class createscandetailtable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.7");
@@ -78,40 +81,31 @@ namespace VisionOfChosen_BE.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("AfterStateJson")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("after_state_json");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("AiAction")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("ai_action");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("AiExplanation")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("ai_explanation");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("BeforeStateJson")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("before_state_json");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("DriftCode")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("drift_code");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ResourceName")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("resource_name");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ResourceType")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("resource_type");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("RiskLevel")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("risk_level");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ScanDetailId")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("scan_detail_id");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("created_by")
                         .HasColumnType("TEXT");
@@ -138,7 +132,7 @@ namespace VisionOfChosen_BE.Migrations
 
                     b.HasIndex("ScanDetailId");
 
-                    b.ToTable("drift");
+                    b.ToTable("Drifts");
                 });
 
             modelBuilder.Entity("VisionOfChosen_BE.Infra.Models.Event", b =>
@@ -264,32 +258,22 @@ namespace VisionOfChosen_BE.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("DriftCount")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("drift_count");
-
-                    b.Property<TimeSpan?>("Duration")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("duration");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("FileName")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("file_name");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("RiskLevel")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("risk_level");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("ScanDate")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("scan_date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("status");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("TotalResources")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("total_resources");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("created_by")
                         .HasColumnType("TEXT");
@@ -314,7 +298,7 @@ namespace VisionOfChosen_BE.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("scan_detail");
+                    b.ToTable("ScanDetails");
                 });
 
             modelBuilder.Entity("VisionOfChosen_BE.Infra.Models.Drift", b =>
