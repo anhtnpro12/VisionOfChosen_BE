@@ -15,11 +15,11 @@ namespace VisionOfChosen_BE.Controllers
             _chatService = chatService;
         }
 
-        // GET: api/aichathistory?userId=abc123
+        // GET: api/aichathistory?sessionId=abc123
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] string userId)
+        public async Task<IActionResult> GetAll([FromQuery] string sessionId)
         {
-            var chats = await _chatService.GetAllAsync(userId);
+            var chats = await _chatService.GetAllAsync(sessionId);
             return Ok(chats);
         }
 

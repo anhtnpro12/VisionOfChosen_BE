@@ -51,7 +51,7 @@ namespace VisionOfChosen_BE.Services
             {
                 SessionId = request.SessionId,
                 UserId = request.UserId,
-                Role = "assistant",
+                Role = "ai",
                 Message = aiResponse.Response ?? "Không có phản hồi",
                 Timestamp = DateTime.UtcNow
             };
@@ -60,7 +60,7 @@ namespace VisionOfChosen_BE.Services
             // 5. Trả kết quả
             return new AIChatResponseDto
             {
-                Role = "assistant",
+                Role = "ai",
                 Message = aiResponse.Response ?? "Không có phản hồi"
             };
         }

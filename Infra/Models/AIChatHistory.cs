@@ -16,7 +16,7 @@ namespace VisionOfChosen_BE.Infra.Models
         public string UserId { get; set; } = string.Empty;
 
         [Column("role")]
-        public string Role { get; set; } = "user"; // "user" hoặc "assistant"
+        public string Role { get; set; } = "user"; // "user" hoặc "ai"
 
         [Column("message")]
         public string Message { get; set; } = string.Empty;

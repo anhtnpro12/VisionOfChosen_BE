@@ -8,7 +8,7 @@ namespace VisionOfChosen_BE.Services
 {
     public interface IAIChatHistoryService
     {
-        Task<List<AiChatHistoryDto>> GetAllAsync(string userId);
+        Task<List<AiChatHistoryDto>> GetAllAsync(string sessionId);
         Task<AiChatHistoryDto?> GetByIdAsync(string id);
         Task<AiChatHistoryDto> CreateAsync(AiChatHistoryCreateDto dto, string actorId);
         Task<AiChatHistoryDto?> UpdateAsync(string id, AiChatHistoryUpdateDto dto, string actorId);
@@ -23,10 +23,10 @@ namespace VisionOfChosen_BE.Services
             _context = context;
         }
 
-        public async Task<List<AiChatHistoryDto>> GetAllAsync(string userId)
+        public async Task<List<AiChatHistoryDto>> GetAllAsync(string sessionId)
         {
             return await _context.AiChatHistories
-                .Where(x => !x.deleted && x.UserId == userId)
+                .Where(x => !x.deleted && x.SessionId == sessionId)
                 .OrderBy(x => x.Timestamp)
                 .Select(x => ToDto(x))
                 .ToListAsync();

@@ -17,12 +17,8 @@ obj/
 
 ## === ASP.NET secrets ===
 secrets.json
-appsettings.Development.json
 appsettings.Local.json
 appsettings.*.local.json
-
-## === Entity Framework ===
-Migrations/
 
 ## === Rider ===
 .idea/

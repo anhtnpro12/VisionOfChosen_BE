@@ -2,7 +2,7 @@
 {
     public static class AiApiRoutes
     {
-        public const string BaseUrl = "http://3.27.141.39:8000";
+        public const string BaseUrl = "http://54.206.79.208:8000";
 
         public static class Chat
         {
