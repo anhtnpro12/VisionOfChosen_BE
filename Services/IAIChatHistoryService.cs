@@ -1,8 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using VisionOfChosen_BE.DTOs.AIChat;
 using VisionOfChosen_BE.DTOs.AiChatHistory;
+using VisionOfChosen_BE.Infra.Consts;
 using VisionOfChosen_BE.Infra.Context;
 using VisionOfChosen_BE.Infra.Models;
+using VisionOfChosen_BE.Utils;
 
 namespace VisionOfChosen_BE.Services
 {
@@ -13,14 +16,18 @@ namespace VisionOfChosen_BE.Services
         Task<AiChatHistoryDto> CreateAsync(AiChatHistoryCreateDto dto, string actorId);
         Task<AiChatHistoryDto?> UpdateAsync(string id, AiChatHistoryUpdateDto dto, string actorId);
         Task<bool> DeleteAsync(string id, string actorId);
+        Task<List<ChatSessionDto>> GetChatSessionsAsync(string userId);
+        Task<NewSessionDto> GetNewChatSessionAsync();
     }
     public class AIChatHistoryService : IAIChatHistoryService
     {
         private readonly VisionOfChosen_Context _context;
+        private readonly IHttpHelper _httpHelper;
 
-        public AIChatHistoryService(VisionOfChosen_Context context)
+        public AIChatHistoryService(VisionOfChosen_Context context, IHttpHelper httpHelper)
         {
             _context = context;
+            _httpHelper = httpHelper;
         }
 
         public async Task<List<AiChatHistoryDto>> GetAllAsync(string sessionId)
@@ -95,5 +102,46 @@ namespace VisionOfChosen_BE.Services
             Message = entity.Message,
             Timestamp = entity.Timestamp
         };
+
+        public async Task<List<ChatSessionDto>> GetChatSessionsAsync(string userId)
+        {
+            var sessions = _context.AiChatHistories
+                .Where(ch => userId == ch.UserId && !ch.deleted)
+                .AsEnumerable()
+                .GroupBy(ch => ch.SessionId)
+                .Select(g => 
+                {
+                    var firstMessage = g.OrderBy(ch => ch.Timestamp).Select(ch => ch.Message).FirstOrDefault();
+                    var title = $"Session {g.Key}";
+                    var preview = string.Empty;
+                    if (firstMessage != null)
+                    {
+                        title = firstMessage.Substring(0, Math.Min(firstMessage.Length, 30));
+                        preview = firstMessage.Substring(0, Math.Min(firstMessage.Length, 50));
+                    }
+
+                    return new ChatSessionDto
+                    {
+                        SessionId = g.Key,
+                        Title = title,
+                        CreatedAt = g.Min(ch => ch.Timestamp),
+                        LastActivity = g.Max(ch => ch.Timestamp),
+                        Preview = preview,
+                        MessageCount = g.Count()
+                    };
+                })
+                .OrderByDescending(dto => dto.LastActivity)
+                .ToList();
+
+            return sessions;
+        }
+
+        public async Task<NewSessionDto> GetNewChatSessionAsync()
+        {
+            var response = await _httpHelper.PostJsonAsync<object, NewSessionDto>(
+                AiApiRoutes.Chat.StartSession, new {});
+
+            return response;
+        }
     }
 }

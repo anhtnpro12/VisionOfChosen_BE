@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VisionOfChosen_BE.DTOs.AiChatHistory;
+using VisionOfChosen_BE.Infra.Consts;
 using VisionOfChosen_BE.Services;
 
 namespace VisionOfChosen_BE.Controllers
@@ -66,6 +67,20 @@ namespace VisionOfChosen_BE.Controllers
                 return NotFound();
 
             return NoContent();
+        }
+
+        [HttpGet("sessions")]
+        public async Task<IActionResult> GetChatSessions()
+        {
+            var sessions = await _chatService.GetChatSessionsAsync(RoleConst.userIdDefault);
+            return Ok(sessions);
+        }
+
+        [HttpGet("new-session")]
+        public async Task<IActionResult> GetNewChatSession()
+        {
+            var sessions = await _chatService.GetNewChatSessionAsync();
+            return Ok(sessions);
         }
     }
 }

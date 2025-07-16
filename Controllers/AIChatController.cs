@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VisionOfChosen_BE.DTOs.AIChat;
+using VisionOfChosen_BE.Infra.Consts;
 using VisionOfChosen_BE.Services;
 
 namespace VisionOfChosen_BE.Controllers
@@ -18,7 +19,7 @@ namespace VisionOfChosen_BE.Controllers
         [HttpPost("ask")]
         public async Task<IActionResult> Ask([FromBody] AIChatRequestDto request)
         {
-            var result = await _service.ProcessPromptAsync(request);
+            var result = await _service.ProcessPromptAsync(request, RoleConst.userIdDefault);
             return Ok(result);
         }
     }

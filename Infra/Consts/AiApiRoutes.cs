@@ -7,6 +7,7 @@
         public static class Chat
         {
             public const string ChatAI = $"{BaseUrl}/chat";
+            public const string StartSession = $"{BaseUrl}/start-session";
         }
     }
 
