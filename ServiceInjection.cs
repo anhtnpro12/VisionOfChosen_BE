@@ -13,7 +13,10 @@ namespace VisionOfChosen_BE
             services.AddScoped<IScanService, ScanService>();
             services.AddScoped<IAIChatService, AIChatService>();
             services.AddScoped<IScanDetailService, ScanDetailService>();
-            services.AddHttpClient<IHttpHelper, HttpHelper>();
+            services.AddHttpClient<IHttpHelper, HttpHelper>(client =>
+            {
+                client.Timeout = TimeSpan.FromMinutes(10);
+            });
         }
     }
 }
