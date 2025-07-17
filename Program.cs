@@ -4,16 +4,14 @@ using VisionOfChosen_BE.Infra.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options =>
+builder.Services.AddCors(o => o.AddPolicy("AllowOrigin", builder =>
 {
-    options.AddDefaultPolicy(policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
-
+    builder
+       .AllowAnyMethod()
+       .AllowAnyHeader()
+                .SetIsOriginAllowed((host) => true) 
+                .AllowCredentials();
+}));
 
 // Add services to the container.
 
@@ -26,7 +24,7 @@ builder.Services.AddDbContext<VisionOfChosen_Context>(options =>
 builder.Services.AddServices();
 var app = builder.Build();
 
-app.UseCors();
+app.UseCors("AllowOrigin");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
