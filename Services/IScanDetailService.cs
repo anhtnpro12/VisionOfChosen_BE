@@ -9,12 +9,12 @@ namespace VisionOfChosen_BE.Services
 {
     public interface IScanDetailService
     {
-        Task<string> CreateAsync(ScanDetailDto dto);
+        Task<string> CreateAsync(ScanDetailDto dto, string userId);
         Task<List<ScanDetailDto>> GetListAsync(ScanDetailQuery request);
-        Task<ScanDetailDto?> GetByIdAsync(string id);
-        Task<ScanDetailDto?> UpdateAsync(string id, ScanDetailDto dto);
-        Task<bool> DeleteAsync(string id, string deletedBy);
-        Task<ScanDashboardDto> GetScanDashboardAsync();
+        Task<ScanDetailDto?> GetByIdAsync(string id, string userId);
+        Task<ScanDetailDto?> UpdateAsync(string id, ScanDetailDto dto, string userId);
+        Task<bool> DeleteAsync(string id, string userId);
+        Task<ScanDashboardDto> GetScanDashboardAsync(string userId);
 
     }
     public class ScanDetailService : IScanDetailService
@@ -27,10 +27,11 @@ namespace VisionOfChosen_BE.Services
         }
 
         // CREATE
-        public async Task<string> CreateAsync(ScanDetailDto dto)
+        public async Task<string> CreateAsync(ScanDetailDto dto, string userId)
         {
             var scanDetail = new ScanDetail
             {
+                UserId = userId,
                 FileName = dto.FileName,
                 ScanDate = dto.ScanDate,
                 Status = dto.Status,
@@ -40,6 +41,7 @@ namespace VisionOfChosen_BE.Services
                 Duration = dto.Duration,
                 Drifts = dto.Drifts.Select(d => new Drift
                 {
+                    UserId = userId,
                     DriftCode = d.DriftCode,
                     ResourceType = d.ResourceType,
                     ResourceName = d.ResourceName,
@@ -49,7 +51,7 @@ namespace VisionOfChosen_BE.Services
                     AiExplanation = d.AiExplanation,
                     AiAction = d.AiAction
                 }).ToList()
-            }.Created(dto.CreatedBy!);
+            }.Created(userId);
 
             _context.ScanDetails.Add(scanDetail);
             await _context.SaveChangesAsync();
@@ -107,11 +109,11 @@ namespace VisionOfChosen_BE.Services
         }
 
         // READ - Get by Id
-        public async Task<ScanDetailDto?> GetByIdAsync(string id)
+        public async Task<ScanDetailDto?> GetByIdAsync(string id, string userId)
         {
             var scan = await _context.ScanDetails
                 .Include(s => s.Drifts)
-                .FirstOrDefaultAsync(s => s.id == id && !s.deleted);
+                .FirstOrDefaultAsync(s => s.id == id && !s.deleted && s.UserId == userId);
 
             if (scan == null) return null;
 
@@ -142,7 +144,7 @@ namespace VisionOfChosen_BE.Services
         }
 
         // UPDATE
-        public async Task<ScanDetailDto?> UpdateAsync(string id, ScanDetailDto dto)
+        public async Task<ScanDetailDto?> UpdateAsync(string id, ScanDetailDto dto, string userId)
         {
             var existing = await _context.ScanDetails
                 .Include(s => s.Drifts)
@@ -157,28 +159,37 @@ namespace VisionOfChosen_BE.Services
             existing.DriftCount = dto.DriftCount;
             existing.RiskLevel = dto.RiskLevel;
             existing.Duration = dto.Duration;
-            existing.Modified(dto.ModifiedBy!);
+            existing.Modified(userId);
 
             await _context.SaveChangesAsync();
-            return await GetByIdAsync(id);
+            return await GetByIdAsync(id, userId);
         }
 
         // DELETE (soft delete)
-        public async Task<bool> DeleteAsync(string id, string deletedBy)
+        public async Task<bool> DeleteAsync(string id, string userId)
         {
-            var scan = await _context.ScanDetails.FindAsync(id);
+            var scan = await _context.ScanDetails
+                .Where(e => e.UserId == userId)
+                .Include(e => e.Drifts)
+                .FirstOrDefaultAsync(e => e.id == id);
             if (scan == null) return false;
 
-            scan.Deleted(deletedBy);
+            foreach (var drift in scan.Drifts)
+            {
+                drift.Deleted(userId);
+            }
+
+            scan.Deleted(userId);
 
             await _context.SaveChangesAsync();
             return true;
         }
 
         // OVERVIEW - Get scan dashboard summary
-        public async Task<ScanDashboardDto> GetScanDashboardAsync()
+        public async Task<ScanDashboardDto> GetScanDashboardAsync(string userId)
         {
             var scans = await _context.ScanDetails
+                .Where(e => e.UserId == userId)
                 .Include(s => s.Drifts)
                 .Where(s => !s.deleted)
                 .OrderByDescending(s => s.ScanDate)

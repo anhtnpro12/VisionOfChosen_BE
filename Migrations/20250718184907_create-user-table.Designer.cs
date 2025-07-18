@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VisionOfChosen_BE.Infra.Context;
 
@@ -10,9 +11,11 @@ using VisionOfChosen_BE.Infra.Context;
 namespace VisionOfChosen_BE.Migrations
 {
     [DbContext(typeof(VisionOfChosen_Context))]
-    partial class VisionOfChosen_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250718184907_create-user-table")]
+    partial class createusertable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.7");
@@ -112,11 +115,6 @@ namespace VisionOfChosen_BE.Migrations
                     b.Property<string>("ScanDetailId")
                         .HasColumnType("TEXT")
                         .HasColumnName("scan_detail_id");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("user_id");
 
                     b.Property<string>("created_by")
                         .HasColumnType("TEXT");
@@ -237,11 +235,6 @@ namespace VisionOfChosen_BE.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("status");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("user_id");
-
                     b.Property<string>("created_by")
                         .HasColumnType("TEXT");
 
@@ -301,11 +294,6 @@ namespace VisionOfChosen_BE.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("total_resources");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("user_id");
-
                     b.Property<string>("created_by")
                         .HasColumnType("TEXT");
 
@@ -339,27 +327,15 @@ namespace VisionOfChosen_BE.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("email");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("name");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("password_hash");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("role");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("user_id");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("created_by")
                         .HasColumnType("TEXT");

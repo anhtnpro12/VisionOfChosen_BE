@@ -17,6 +17,7 @@ namespace VisionOfChosen_BE
             {
                 client.Timeout = TimeSpan.FromMinutes(10);
             });
+            services.AddScoped<IAuthService, AuthService>();
         }
     }
 }

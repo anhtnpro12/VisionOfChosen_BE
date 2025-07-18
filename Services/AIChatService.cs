@@ -9,7 +9,7 @@ namespace VisionOfChosen_BE.Services
 {
     public interface IAIChatService
     {
-        Task<AIChatResponseDto> ProcessPromptAsync(AIChatRequestDto request, string userId);
+        Task<AIChatResponseDto> ProcessPromptAsync(AIChatRequestDto request, string userId, string role);
     }
 
     public class AIChatService : IAIChatService
@@ -23,18 +23,16 @@ namespace VisionOfChosen_BE.Services
             _historyService = historyService;
         }
 
-        public async Task<AIChatResponseDto> ProcessPromptAsync(AIChatRequestDto request, string userId)
+        public async Task<AIChatResponseDto> ProcessPromptAsync(AIChatRequestDto request, string userId, string role)
         {
             // 1. Lưu câu hỏi người dùng
             var userMsg = new AiChatHistoryCreateDto
             {
                 SessionId = request.SessionId,
-                UserId = userId,
-                Role = "user",
                 Message = request.Message,
                 Timestamp = DateTime.Now
             };
-            await _historyService.CreateAsync(userMsg, userId);
+            await _historyService.CreateAsync(userMsg, userId, role);
 
             // 2. Gửi request lên AI
             var payload = new
@@ -50,12 +48,10 @@ namespace VisionOfChosen_BE.Services
             var aiMsg = new AiChatHistoryCreateDto
             {
                 SessionId = request.SessionId,
-                UserId = userId,
-                Role = "ai",
                 Message = aiResponse.Response ?? "Không có phản hồi",
                 Timestamp = DateTime.Now
             };
-            await _historyService.CreateAsync(aiMsg, "ai");
+            await _historyService.CreateAsync(aiMsg, userId, "ai");
 
             // 5. Trả kết quả
             return new AIChatResponseDto

@@ -11,9 +11,9 @@ namespace VisionOfChosen_BE.Services
 {
     public interface IAIChatHistoryService
     {
-        Task<List<AiChatHistoryDto>> GetAllAsync(string sessionId);
-        Task<AiChatHistoryDto?> GetByIdAsync(string id);
-        Task<AiChatHistoryDto> CreateAsync(AiChatHistoryCreateDto dto, string actorId);
+        Task<List<AiChatHistoryDto>> GetAllAsync(string sessionId, string userId);
+        Task<AiChatHistoryDto?> GetByIdAsync(string id, string userId);
+        Task<AiChatHistoryDto> CreateAsync(AiChatHistoryCreateDto dto, string userId, string role);
         Task<AiChatHistoryDto?> UpdateAsync(string id, AiChatHistoryUpdateDto dto, string actorId);
         Task<bool> DeleteAsync(string id, string actorId);
         Task<List<ChatSessionDto>> GetChatSessionsAsync(string userId);
@@ -30,33 +30,33 @@ namespace VisionOfChosen_BE.Services
             _httpHelper = httpHelper;
         }
 
-        public async Task<List<AiChatHistoryDto>> GetAllAsync(string sessionId)
+        public async Task<List<AiChatHistoryDto>> GetAllAsync(string sessionId, string userId)
         {
             return await _context.AiChatHistories
-                .Where(x => !x.deleted && x.SessionId == sessionId)
+                .Where(x => !x.deleted && x.SessionId == sessionId && x.UserId == userId)
                 .OrderBy(x => x.Timestamp)
                 .Select(x => ToDto(x))
                 .ToListAsync();
         }
 
-        public async Task<AiChatHistoryDto?> GetByIdAsync(string id)
+        public async Task<AiChatHistoryDto?> GetByIdAsync(string id, string userId)
         {
             var entity = await _context.AiChatHistories
-                .FirstOrDefaultAsync(x => x.id == id && !x.deleted);
+                .FirstOrDefaultAsync(x => x.id == id && !x.deleted && x.UserId == userId);
 
             return entity == null ? null : ToDto(entity);
         }
 
-        public async Task<AiChatHistoryDto> CreateAsync(AiChatHistoryCreateDto dto, string actorId)
+        public async Task<AiChatHistoryDto> CreateAsync(AiChatHistoryCreateDto dto, string userId, string role)
         {
             var entity = new AiChatHistory
             {
                 SessionId = dto.SessionId,
-                UserId = dto.UserId,
-                Role = dto.Role,
+                UserId = userId,
+                Role = role,
                 Message = dto.Message,
                 Timestamp = dto.Timestamp
-            }.Created(actorId);
+            }.Created(userId);
 
             _context.AiChatHistories.Add(entity);
             await _context.SaveChangesAsync();
@@ -66,7 +66,7 @@ namespace VisionOfChosen_BE.Services
 
         public async Task<AiChatHistoryDto?> UpdateAsync(string id, AiChatHistoryUpdateDto dto, string actorId)
         {
-            var entity = await _context.AiChatHistories.FirstOrDefaultAsync(x => x.id == id && !x.deleted);
+            var entity = await _context.AiChatHistories.FirstOrDefaultAsync(x => x.id == id && !x.deleted && x.UserId == actorId);
             if (entity == null) return null;
 
             entity.SessionId = dto.SessionId;
@@ -83,7 +83,7 @@ namespace VisionOfChosen_BE.Services
 
         public async Task<bool> DeleteAsync(string id, string actorId)
         {
-            var entity = await _context.AiChatHistories.FirstOrDefaultAsync(x => x.id == id && !x.deleted);
+            var entity = await _context.AiChatHistories.FirstOrDefaultAsync(x => x.id == id && !x.deleted && x.UserId == actorId);
             if (entity == null) return false;
 
             entity.Deleted(actorId);

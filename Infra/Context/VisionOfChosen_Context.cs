@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq.Expressions;
 using VisionOfChosen_BE.Infra.Models;
 
 namespace VisionOfChosen_BE.Infra.Context
@@ -13,6 +14,7 @@ namespace VisionOfChosen_BE.Infra.Context
         public DbSet<Scan> Scans => Set<Scan>();
         public DbSet<ScanDetail> ScanDetails => Set<ScanDetail>();
         public DbSet<Drift> Drifts => Set<Drift>();
+        public DbSet<User> Users => Set<User>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -20,6 +22,18 @@ namespace VisionOfChosen_BE.Infra.Context
                 .HasMany(s => s.Drifts)
                 .WithOne(d => d.ScanDetail)
                 .HasForeignKey(d => d.ScanDetailId);
+            base.OnModelCreating(modelBuilder);
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                if (typeof(ExtendModel).IsAssignableFrom(entityType.ClrType))
+                {
+                    var parameter = Expression.Parameter(entityType.ClrType, "e");
+                    var property = Expression.Property(parameter, "deleted");
+                    var filter = Expression.Lambda(Expression.Equal(property, Expression.Constant(false)), parameter);
+
+                    entityType.SetQueryFilter(filter);
+                }
+            }
         }
     }
 }

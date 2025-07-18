@@ -12,9 +12,6 @@ namespace VisionOfChosen_BE.Infra.Models
         [Column("session_id")]
         public string SessionId { get; set; } = string.Empty; // Mỗi phiên chat có thể gồm nhiều lượt hỏi-đáp
 
-        [Column("user_id")]
-        public string UserId { get; set; } = string.Empty;
-
         [Column("role")]
         public string Role { get; set; } = "user"; 
 

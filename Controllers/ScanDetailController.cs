@@ -7,7 +7,7 @@ namespace VisionOfChosen_BE.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ScanDetailController : ControllerBase
+    public class ScanDetailController : AuthorizeController
     {
         private readonly IScanDetailService _service;
 
@@ -26,9 +26,9 @@ namespace VisionOfChosen_BE.Controllers
 
         // GET: api/scandetail/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<ScanDetailDto>> GetById(string id)
+        public async Task<ActionResult<ScanDetailDto>> GetById(string id, string userId)
         {
-            var result = await _service.GetByIdAsync(id);
+            var result = await _service.GetByIdAsync(id, userId);
             if (result == null) return NotFound();
             return Ok(result);
         }
@@ -37,7 +37,7 @@ namespace VisionOfChosen_BE.Controllers
         [HttpPost]
         public async Task<ActionResult<string>> Create([FromBody] ScanDetailDto dto)
         {
-            var id = await _service.CreateAsync(dto);
+            var id = await _service.CreateAsync(dto, UserHeader.UserId);
             return CreatedAtAction(nameof(GetById), new { id }, id);
         }
 
@@ -45,7 +45,7 @@ namespace VisionOfChosen_BE.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<ScanDetailDto>> Update(string id, [FromBody] ScanDetailDto dto)
         {
-            var result = await _service.UpdateAsync(id, dto);
+            var result = await _service.UpdateAsync(id, dto, UserHeader.UserId);
             if (result == null) return NotFound();
             return Ok(result);
         }
@@ -54,7 +54,7 @@ namespace VisionOfChosen_BE.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(string id)
         {
-            var success = await _service.DeleteAsync(id, RoleConst.userIdDefault);
+            var success = await _service.DeleteAsync(id, UserHeader.UserId);
             if (!success) return NotFound();
             return NoContent();
         }
@@ -62,7 +62,7 @@ namespace VisionOfChosen_BE.Controllers
         [HttpGet("dashboard")]
         public async Task<ActionResult<ScanDashboardDto>> GetDashboard()
         {
-            var raw = await _service.GetScanDashboardAsync();
+            var raw = await _service.GetScanDashboardAsync(UserHeader.UserId);
             return Ok(raw);
         }
     }

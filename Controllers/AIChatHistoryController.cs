@@ -7,7 +7,7 @@ namespace VisionOfChosen_BE.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AIChatHistoryController : ControllerBase
+    public class AIChatHistoryController : AuthorizeController
     {
         private readonly IAIChatHistoryService _chatService;
 
@@ -20,7 +20,7 @@ namespace VisionOfChosen_BE.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] string sessionId)
         {
-            var chats = await _chatService.GetAllAsync(sessionId);
+            var chats = await _chatService.GetAllAsync(sessionId, UserHeader.UserId);
             return Ok(chats);
         }
 
@@ -28,7 +28,7 @@ namespace VisionOfChosen_BE.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
-            var chat = await _chatService.GetByIdAsync(id);
+            var chat = await _chatService.GetByIdAsync(id, UserHeader.UserId);
             if (chat == null)
                 return NotFound();
 
@@ -39,9 +39,7 @@ namespace VisionOfChosen_BE.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AiChatHistoryCreateDto dto)
         {
-            // ActorId có thể là từ JWT/Token, tạm hard-code ở đây
-            string actorId = dto.UserId;
-            var result = await _chatService.CreateAsync(dto, actorId);
+            var result = await _chatService.CreateAsync(dto, UserHeader.UserId, UserHeader.Role);
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
@@ -49,8 +47,7 @@ namespace VisionOfChosen_BE.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] AiChatHistoryUpdateDto dto)
         {
-            string actorId = "system"; // Hoặc từ context
-            var result = await _chatService.UpdateAsync(id, dto, actorId);
+            var result = await _chatService.UpdateAsync(id, dto, UserHeader.UserId);
             if (result == null)
                 return NotFound();
 
@@ -61,8 +58,7 @@ namespace VisionOfChosen_BE.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            string actorId = "system"; // Thay bằng thông tin người dùng đăng nhập
-            var success = await _chatService.DeleteAsync(id, actorId);
+            var success = await _chatService.DeleteAsync(id, UserHeader.UserId);
             if (!success)
                 return NotFound();
 
@@ -72,7 +68,7 @@ namespace VisionOfChosen_BE.Controllers
         [HttpGet("sessions")]
         public async Task<IActionResult> GetChatSessions()
         {
-            var sessions = await _chatService.GetChatSessionsAsync(RoleConst.userIdDefault);
+            var sessions = await _chatService.GetChatSessionsAsync(UserHeader.UserId);
             return Ok(sessions);
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VisionOfChosen_BE.Infra.Models
 {
@@ -7,6 +8,8 @@ namespace VisionOfChosen_BE.Infra.Models
     {
         [Key]
         public virtual string id { get; set; } = Guid.NewGuid().ToString();
+        [Column("user_id")]
+        public string UserId { get; set; } = string.Empty;
     }
     public abstract class ExtendModel : BaseModel
     {

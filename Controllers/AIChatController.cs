@@ -7,7 +7,7 @@ namespace VisionOfChosen_BE.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AIChatController : ControllerBase
+    public class AIChatController : AuthorizeController
     {
         private readonly IAIChatService _service;
 
@@ -19,7 +19,7 @@ namespace VisionOfChosen_BE.Controllers
         [HttpPost("ask")]
         public async Task<IActionResult> Ask([FromBody] AIChatRequestDto request)
         {
-            var result = await _service.ProcessPromptAsync(request, RoleConst.userIdDefault);
+            var result = await _service.ProcessPromptAsync(request, UserHeader.UserId, UserHeader.Role);
             return Ok(result);
         }
     }
