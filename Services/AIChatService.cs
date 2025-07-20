@@ -49,9 +49,12 @@ namespace VisionOfChosen_BE.Services
                 message = request.Message,
                 session_id = request.SessionId
             };
-
+            var headers = new Dictionary<string, string>
+            {
+                { "X-Session-ID", request.SessionId }
+            };
             var aiResponse = await _httpHelper.PostJsonAsync<object, AIResponseDto>(
-                AiApiRoutes.Chat.ChatAI, payload);
+                AiApiRoutes.Chat.ChatAI, payload, headers);
 
             // 4. Lưu phản hồi của AI
             var aiMsg = new AiChatHistoryCreateDto

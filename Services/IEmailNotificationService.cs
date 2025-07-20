@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Security.AccessControl;
+using VisionOfChosen_BE.DTOs.AIChat;
 using VisionOfChosen_BE.DTOs.EmailNotification;
+using VisionOfChosen_BE.Infra.Consts;
 using VisionOfChosen_BE.Infra.Context;
 using VisionOfChosen_BE.Infra.Models;
+using VisionOfChosen_BE.Utils;
 
 namespace VisionOfChosen_BE.Services
 {
@@ -17,11 +21,13 @@ namespace VisionOfChosen_BE.Services
     {
         private readonly VisionOfChosen_Context _context;
         private readonly IMapper _mapper;
+        private readonly IHttpHelper _httpHelper;
 
-        public EmailNotificationService(VisionOfChosen_Context context, IMapper mapper)
+        public EmailNotificationService(VisionOfChosen_Context context, IMapper mapper, IHttpHelper httpHelper)
         {
             _context = context;
             _mapper = mapper;
+            _httpHelper = httpHelper;
         }
 
         public async Task<List<string>> GetAllAsync(string userId)
@@ -58,6 +64,18 @@ namespace VisionOfChosen_BE.Services
                     UserId = userId,
                 })
                 .ToList();
+
+            // Set email notification on AI server
+            var payload = new
+            {
+                recipient_emails = toAdd.Select(e => e.Email).ToList(),
+                resource_types = new List<string>(),
+                setup_aws_config = false,
+                include_global_resources = true,
+                user_id = userId
+            };
+            var aiResponse = await _httpHelper.PostJsonAsync<object, AISetCredentialResponseDto>(
+                AiApiRoutes.Chat.SetupNotifications, payload);
 
             _context.EmailNotifications.RemoveRange(toDelete);
             _context.EmailNotifications.AddRange(toAdd);

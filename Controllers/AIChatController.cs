@@ -10,10 +10,12 @@ namespace VisionOfChosen_BE.Controllers
     public class AIChatController : AuthorizeController
     {
         private readonly IAIChatService _service;
+        private readonly IEmailNotificationService _emailNotificationService;
 
-        public AIChatController(IAIChatService service)
+        public AIChatController(IAIChatService service, IEmailNotificationService emailNotificationService)
         {
             _service = service;
+            _emailNotificationService = emailNotificationService;
         }
 
         [HttpPost("ask")]
@@ -27,6 +29,13 @@ namespace VisionOfChosen_BE.Controllers
         public async Task<IActionResult> SetAWSCredentials([FromBody] SetAWSCredentialsRequestDto request)
         {
             var result = await _service.SetAWSCredentials(request, UserHeader.UserId);
+            return Ok(result);
+        }
+
+        [HttpPost("set-email-notifications")]
+        public async Task<IActionResult> SetEmailNotifications([FromBody] List<string> emails)
+        {
+            var result = await _emailNotificationService.UpdateUserEmailsAsync(emails, UserHeader.UserId);
             return Ok(result);
         }
     }
