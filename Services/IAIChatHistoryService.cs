@@ -1,7 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 using System;
 using VisionOfChosen_BE.DTOs.AIChat;
 using VisionOfChosen_BE.DTOs.AiChatHistory;
+using VisionOfChosen_BE.DTOs.FileStorage;
 using VisionOfChosen_BE.Infra.Consts;
 using VisionOfChosen_BE.Infra.Context;
 using VisionOfChosen_BE.Infra.Models;
@@ -23,11 +26,13 @@ namespace VisionOfChosen_BE.Services
     {
         private readonly VisionOfChosen_Context _context;
         private readonly IHttpHelper _httpHelper;
+        private readonly IMapper _mapper;
 
-        public AIChatHistoryService(VisionOfChosen_Context context, IHttpHelper httpHelper)
+        public AIChatHistoryService(VisionOfChosen_Context context, IHttpHelper httpHelper, IMapper mapper)
         {
             _context = context;
             _httpHelper = httpHelper;
+            _mapper = mapper;
         }
 
         public async Task<List<AiChatHistoryDto>> GetAllAsync(string sessionId, string userId)
@@ -35,7 +40,7 @@ namespace VisionOfChosen_BE.Services
             return await _context.AiChatHistories
                 .Where(x => !x.deleted && x.SessionId == sessionId && x.UserId == userId)
                 .OrderBy(x => x.Timestamp)
-                .Select(x => ToDto(x))
+                .Select(e => _mapper.Map<AiChatHistoryDto>(e))
                 .ToListAsync();
         }
 
@@ -44,7 +49,7 @@ namespace VisionOfChosen_BE.Services
             var entity = await _context.AiChatHistories
                 .FirstOrDefaultAsync(x => x.id == id && !x.deleted && x.UserId == userId);
 
-            return entity == null ? null : ToDto(entity);
+            return entity == null ? null : _mapper.Map<AiChatHistoryDto>(entity);
         }
 
         public async Task<AiChatHistoryDto> CreateAsync(AiChatHistoryCreateDto dto, string userId, string role)
@@ -55,13 +60,21 @@ namespace VisionOfChosen_BE.Services
                 UserId = userId,
                 Role = role,
                 Message = dto.Message,
-                Timestamp = dto.Timestamp
+                Timestamp = dto.Timestamp,
+                Files = dto.Files.Select(e => new FileBase
+                {
+                    OriginalFileName = e.OriginalFileName,
+                    SavedFileName = e.SavedFileName,
+                    Size = e.Size,
+                    ContentType = e.ContentType,
+                    Url = e.Url
+                }).ToList()
             }.Created(userId);
 
             _context.AiChatHistories.Add(entity);
             await _context.SaveChangesAsync();
 
-            return ToDto(entity);
+            return _mapper.Map<AiChatHistoryDto>(entity);
         }
 
         public async Task<AiChatHistoryDto?> UpdateAsync(string id, AiChatHistoryUpdateDto dto, string actorId)
@@ -78,7 +91,7 @@ namespace VisionOfChosen_BE.Services
             _context.AiChatHistories.Update(entity);
             await _context.SaveChangesAsync();
 
-            return ToDto(entity);
+            return _mapper.Map<AiChatHistoryDto>(entity);
         }
 
         public async Task<bool> DeleteAsync(string id, string actorId)
@@ -92,16 +105,6 @@ namespace VisionOfChosen_BE.Services
 
             return true;
         }
-
-        private static AiChatHistoryDto ToDto(AiChatHistory entity) => new()
-        {
-            Id = entity.id,
-            SessionId = entity.SessionId,
-            UserId = entity.UserId,
-            Role = entity.Role,
-            Message = entity.Message,
-            Timestamp = entity.Timestamp
-        };
 
         public async Task<List<ChatSessionDto>> GetChatSessionsAsync(string userId)
         {

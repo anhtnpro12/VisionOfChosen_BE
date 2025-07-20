@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VisionOfChosen_BE.Infra.Context;
 
@@ -10,9 +11,11 @@ using VisionOfChosen_BE.Infra.Context;
 namespace VisionOfChosen_BE.Migrations
 {
     [DbContext(typeof(VisionOfChosen_Context))]
-    partial class VisionOfChosen_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250720065024_create-aws-crendential-table")]
+    partial class createawscrendentialtable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.7");
@@ -200,47 +203,6 @@ namespace VisionOfChosen_BE.Migrations
                     b.HasIndex("ScanDetailId");
 
                     b.ToTable("drift");
-                });
-
-            modelBuilder.Entity("VisionOfChosen_BE.Infra.Models.EmailNotification", b =>
-                {
-                    b.Property<string>("id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("email");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("user_id");
-
-                    b.Property<string>("created_by")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("created_on")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("deleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("deleted_by")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("deleted_on")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("modified_by")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("modified_on")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("id");
-
-                    b.ToTable("email_notification");
                 });
 
             modelBuilder.Entity("VisionOfChosen_BE.Infra.Models.Event", b =>

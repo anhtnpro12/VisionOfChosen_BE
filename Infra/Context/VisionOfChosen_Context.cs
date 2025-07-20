@@ -15,6 +15,8 @@ namespace VisionOfChosen_BE.Infra.Context
         public DbSet<ScanDetail> ScanDetails => Set<ScanDetail>();
         public DbSet<Drift> Drifts => Set<Drift>();
         public DbSet<User> Users => Set<User>();
+        public DbSet<AwsCredential> AwsCredentials => Set<AwsCredential>();
+        public DbSet<EmailNotification> EmailNotifications => Set<EmailNotification>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -7,6 +7,7 @@ namespace VisionOfChosen_BE
     {
         public static void AddServices(this IServiceCollection services)
         {
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddHttpContextAccessor();
             services.AddScoped<IAIChatHistoryService, AIChatHistoryService>();
             services.AddScoped<IEventService, EventService>();
@@ -18,6 +19,10 @@ namespace VisionOfChosen_BE
                 client.Timeout = TimeSpan.FromMinutes(10);
             });
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IFileStorageService, FileStorageService>();
+            services.AddScoped<IAwsCredentialService, AwsCredentialService>();
+            services.AddScoped<IEmailNotificationService, EmailNotificationService>();
+            services.AddScoped<ISettingService, SettingService>();
         }
     }
 }

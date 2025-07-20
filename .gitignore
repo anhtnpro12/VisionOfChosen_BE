@@ -20,6 +20,8 @@ secrets.json
 appsettings.Local.json
 appsettings.*.local.json
 
+Uploads/
+
 ## === Rider ===
 .idea/
 *.sln.iml

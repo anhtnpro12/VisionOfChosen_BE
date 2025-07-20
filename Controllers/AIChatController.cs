@@ -22,6 +22,13 @@ namespace VisionOfChosen_BE.Controllers
             var result = await _service.ProcessPromptAsync(request, UserHeader.UserId, UserHeader.Role);
             return Ok(result);
         }
+
+        [HttpPost("set-aws-credentials")]
+        public async Task<IActionResult> SetAWSCredentials([FromBody] SetAWSCredentialsRequestDto request)
+        {
+            var result = await _service.SetAWSCredentials(request, UserHeader.UserId);
+            return Ok(result);
+        }
     }
 
 }

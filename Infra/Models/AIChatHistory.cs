@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VisionOfChosen_BE.Infra.Models
 {
@@ -20,5 +21,16 @@ namespace VisionOfChosen_BE.Infra.Models
 
         [Column("timestamp")]
         public DateTime Timestamp { get; set; } = DateTime.Now;
+
+        [Column("json_files")]
+        public string? JsonFiles { get; set; }
+
+        [JsonIgnore]
+        [NotMapped]
+        public List<FileBase> Files
+        {
+            get => JsonConvert.DeserializeObject<List<FileBase>>(JsonFiles ?? "[]") ?? new List<FileBase>();
+            set => JsonFiles = JsonConvert.SerializeObject(value);
+        }
     }
 }
