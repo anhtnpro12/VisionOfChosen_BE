@@ -7,6 +7,6 @@ namespace VisionOfChosen_BE.DTOs.Setting
         public string? AwsAccessKeyId { get; set; }
         public string? AwsSecretAccessKey { get; set; }
         public string? AwsRegion { get; set; }
-        public FileUploadResult PemFile { get; set; } = new();
+        public FileUploadResult? PemFile { get; set; }
     }
 }
