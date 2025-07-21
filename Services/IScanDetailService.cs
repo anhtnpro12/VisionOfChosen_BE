@@ -10,6 +10,7 @@ namespace VisionOfChosen_BE.Services
     public interface IScanDetailService
     {
         Task<string> CreateAsync(ScanDetailDto dto, string userId);
+        Task<List<string>> CreateManyAsync(List<ScanDetailDto> dtos, string userId);
         Task<List<ScanDetailDto>> GetListAsync(ScanDetailQuery request);
         Task<ScanDetailDto?> GetByIdAsync(string id, string userId);
         Task<ScanDetailDto?> UpdateAsync(string id, ScanDetailDto dto, string userId);
@@ -57,6 +58,38 @@ namespace VisionOfChosen_BE.Services
             await _context.SaveChangesAsync();
 
             return scanDetail.id;
+        }
+
+        public async Task<List<string>> CreateManyAsync(List<ScanDetailDto> dtos, string userId)
+        {
+            var scanDetails = dtos.Select(dto => new ScanDetail
+            {
+                UserId = userId,
+                FileName = dto.FileName,
+                ScanDate = dto.ScanDate,
+                Status = dto.Status,
+                TotalResources = dto.TotalResources,
+                DriftCount = dto.DriftCount,
+                RiskLevel = dto.RiskLevel,
+                Duration = dto.Duration,
+                Drifts = dto.Drifts.Select(d => new Drift
+                {
+                    UserId = userId,
+                    DriftCode = d.DriftCode,
+                    ResourceType = d.ResourceType,
+                    ResourceName = d.ResourceName,
+                    RiskLevel = d.RiskLevel,
+                    BeforeStateJson = d.BeforeStateJson != null ? JsonSerializer.Serialize(d.BeforeStateJson) : null,
+                    AfterStateJson = d.AfterStateJson != null ? JsonSerializer.Serialize(d.AfterStateJson) : null,
+                    AiExplanation = d.AiExplanation,
+                    AiAction = d.AiAction
+                }).ToList()
+            }.Created(userId)).ToList();
+
+            _context.ScanDetails.AddRange(scanDetails);
+            await _context.SaveChangesAsync();
+
+            return scanDetails.Select(x => x.id).ToList();
         }
 
         // READ - Get all with optional filters

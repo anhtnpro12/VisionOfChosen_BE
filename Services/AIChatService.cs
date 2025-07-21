@@ -7,6 +7,7 @@ using VisionOfChosen_BE.Infra.Consts;
 using System.Data;
 using VisionOfChosen_BE.DTOs.Setting;
 using AutoMapper;
+using VisionOfChosen_BE.DTOs.ScanDetail;
 
 namespace VisionOfChosen_BE.Services
 {
@@ -14,6 +15,7 @@ namespace VisionOfChosen_BE.Services
     {
         Task<AIChatResponseDto> ProcessPromptAsync(AIChatRequestDto request, string userId, string role);
         Task<bool> SetAWSCredentials(SetAWSCredentialsRequestDto request, string userId);
+        Task<bool> GenerateReportAsync(GenerateReportRequestDto request, string userId);
     }
 
     public class AIChatService : IAIChatService
@@ -21,14 +23,16 @@ namespace VisionOfChosen_BE.Services
         private readonly IHttpHelper _httpHelper;
         private readonly IAIChatHistoryService _historyService;
         private readonly IAwsCredentialService _awsCredentialService;
+        private readonly IScanDetailService _scanDetailService;
         private readonly IMapper _mapper;
 
-        public AIChatService(IHttpHelper httpHelper, IAIChatHistoryService historyService, IAwsCredentialService awsCredentialService, IMapper mapper)
+        public AIChatService(IHttpHelper httpHelper, IAIChatHistoryService historyService, IAwsCredentialService awsCredentialService, IMapper mapper, IScanDetailService scanDetailService)
         {
             _httpHelper = httpHelper;
             _historyService = historyService;
             _awsCredentialService = awsCredentialService;
             _mapper = mapper;
+            _scanDetailService = scanDetailService;
         }
 
         public async Task<AIChatResponseDto> ProcessPromptAsync(AIChatRequestDto request, string userId, string role)
@@ -93,6 +97,24 @@ namespace VisionOfChosen_BE.Services
             };
             var aiResponse = await _httpHelper.PostJsonAsync<object, AISetCredentialResponseDto>(
                 AiApiRoutes.Chat.SetAWSCredentials, payload, headers);
+
+            return true;
+        }
+
+        public async Task<bool> GenerateReportAsync(GenerateReportRequestDto request, string userId)
+        {
+            var payload = new
+            {
+                session_id = request.SessionId,
+            };
+            var headers = new Dictionary<string, string>
+            {
+                { "X-Session-ID", request.SessionId }
+            };
+            var aiResponse = await _httpHelper.GetJsonAsync<List<ScanDetailDto>>(
+                AiApiRoutes.Chat.Report, headers);
+
+            await _scanDetailService.CreateManyAsync(aiResponse, userId);
 
             return true;
         }

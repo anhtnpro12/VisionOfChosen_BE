@@ -38,6 +38,13 @@ namespace VisionOfChosen_BE.Controllers
             var result = await _emailNotificationService.UpdateUserEmailsAsync(emails, UserHeader.UserId);
             return Ok(result);
         }
+
+        [HttpPost("generate-report")]
+        public async Task<IActionResult> GenerateReport([FromBody] GenerateReportRequestDto request)
+        {
+            var result = await _service.GenerateReportAsync(request, UserHeader.UserId);
+            return Ok(result);
+        }
     }
 
 }

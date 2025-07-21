@@ -10,6 +10,7 @@
             public const string StartSession = $"{BaseUrl}/start-session";
             public const string SetAWSCredentials = $"{BaseUrl}/set-aws-credentials";
             public const string SetupNotifications = $"{BaseUrl}/setup-notifications";
+            public const string Report = $"{BaseUrl}/report";
         }
     }
 
