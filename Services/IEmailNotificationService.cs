@@ -68,7 +68,7 @@ namespace VisionOfChosen_BE.Services
             // Set email notification on AI server
             var payload = new
             {
-                recipient_email = toAdd.Select(e => e.Email).FirstOrDefault(),
+                recipient_emails = toAdd.Select(e => e.Email).FirstOrDefault(),
                 resource_types = new List<string>(),
                 setup_aws_config = false,
                 include_global_resources = true,
