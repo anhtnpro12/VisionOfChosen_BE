@@ -66,16 +66,19 @@ namespace VisionOfChosen_BE.Services
                 .ToList();
 
             // Set email notification on AI server
-            var payload = new
+            if (toAdd.Any())
             {
-                recipient_emails = toAdd.Select(e => e.Email).FirstOrDefault(),
-                resource_types = new List<string>(),
-                setup_aws_config = false,
-                include_global_resources = true,
-                user_id = userId
-            };
-            var aiResponse = await _httpHelper.PostJsonAsync<object, AISetCredentialResponseDto>(
-                AiApiRoutes.Chat.SetupNotifications, payload);
+                var payload = new
+                {
+                    recipient_emails = toAdd.Select(e => e.Email).FirstOrDefault(),
+                    resource_types = new List<string>(),
+                    setup_aws_config = false,
+                    include_global_resources = true,
+                    user_id = userId
+                };
+                var aiResponse = await _httpHelper.PostJsonAsync<object, AISetCredentialResponseDto>(
+                    AiApiRoutes.Chat.SetupNotifications, payload);
+            }
 
             _context.EmailNotifications.RemoveRange(toDelete);
             _context.EmailNotifications.AddRange(toAdd);
