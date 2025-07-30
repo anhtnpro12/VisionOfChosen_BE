@@ -16,7 +16,7 @@ namespace VisionOfChosen_BE
             services.AddScoped<IScanDetailService, ScanDetailService>();
             services.AddHttpClient<IHttpHelper, HttpHelper>(client =>
             {
-                client.Timeout = TimeSpan.FromMinutes(10);
+                client.Timeout = TimeSpan.FromHours(1);
             });
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IFileStorageService, FileStorageService>();

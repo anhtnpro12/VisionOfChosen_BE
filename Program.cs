@@ -11,6 +11,12 @@ using VisionOfChosen_BE.Infra.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.KeepAliveTimeout = TimeSpan.FromHours(1);
+    serverOptions.Limits.RequestHeadersTimeout = TimeSpan.FromHours(1);
+});
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new() { Title = "Your API", Version = "v1" });
@@ -79,7 +85,6 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<VisionOfChosen_Context>(options =>
     options.UseSqlite("Data Source=app.db"));
 builder.Services.AddServices();
